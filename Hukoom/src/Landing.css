@@ -1,0 +1,38 @@
+.landing-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #0f172a;
+  color: white;
+}
+
+.app-title {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.tagline {
+  margin-bottom: 2rem;
+  color: #cbd5f5;
+}
+
+.role-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.role-card {
+  background: #1e293b;
+  padding: 2rem;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.role-card:hover {
+  transform: scale(1.05);
+  background: #334155;
+}

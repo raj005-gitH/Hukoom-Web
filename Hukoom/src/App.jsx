@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Landing from "./Landing";
-import LandingDemo from "./LandingDemo";
 
 function App() {
   const [role, setRole] = useState(null);

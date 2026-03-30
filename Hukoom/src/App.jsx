@@ -1,20 +1,20 @@
-import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import About from "./pages/About";
 import Landing from "./Landing";
 
 function App() {
-  const [role, setRole] = useState(null);
-
-  const handleRoleSelect = (selectedRole) => {
-    setRole(selectedRole);
-    console.log("Selected role:", selectedRole);
-  };
-
   return (
-    <>
-      {!role && <Landing onSelectRole={handleRoleSelect} />}      
-      {role === "user" && <h1>User Login Page</h1>}
-      {role === "hero" && <h1>Hero Login Page</h1>}            
-    </>
+    <BrowserRouter>
+      <Navbar />
+
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<h1>Contact Us</h1>} />
+        <Route path="/profile" element={<h1>Profile</h1>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -1,6 +1,6 @@
-import "./Landing.css";
+import "./Home.css";
 
-export default function Landing({ onSelectRole }) {
+export default function Home({ onSelectRole }) {
   return (
     <div className="landing-container">
       <h1 className="app-title">Hukoom</h1>

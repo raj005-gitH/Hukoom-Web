@@ -1,0 +1,59 @@
+.profile-container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+/* HEADER */
+.profile-header {
+  text-align: center;
+  background: linear-gradient(135deg, #6b21a8, #a855f7);
+  color: white;
+  padding: 40px 20px;
+  border-radius: 10px;
+}
+
+.avatar {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.edit-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  background: white;
+  color: #6b21a8;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* SECTIONS */
+.profile-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f3f3f3;
+  border-radius: 10px;
+}
+
+/* BOOKINGS */
+.booking-card {
+  margin-top: 10px;
+  padding: 10px;
+  background: white;
+  border-radius: 6px;
+}
+
+/* ACTIONS */
+.profile-actions {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.logout-btn {
+  padding: 12px 25px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

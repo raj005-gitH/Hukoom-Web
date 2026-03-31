@@ -24,6 +24,7 @@ function Home() {
           <div className="card">🚿 Plumber</div>
           <div className="card">🧹 Cleaner</div>
           <div className="card">🔧 Mechanic</div>
+          <div className="card">⚡ Technician</div>
         </div>
       </section>
 

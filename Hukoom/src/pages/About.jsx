@@ -24,10 +24,10 @@ const values = [
 ];
 
 const team = [
-  { name: "Raj Patel", role: "Founder & CEO", initial: "R", color: "#3b82f6" },
-  { name: "Ananya Mehta", role: "CTO", initial: "A", color: "#06b6d4" },
-  { name: "Vikram Singh", role: "Head of Operations", initial: "V", color: "#8b5cf6" },
-  { name: "Sneha Gupta", role: "Head of Design", initial: "S", color: "#ec4899" },
+  { name: "Jayraj Singh", role: "Founder & CEO", initial: "R", color: "#3b82f6" },
+  { name: "Divyansh Singh", role: "CTO", initial: "A", color: "#06b6d4" },
+  { name: "Aditya Kumar", role: "Head of Operations", initial: "V", color: "#8b5cf6" },
+  { name: "Amit Kumar", role: "Head of Design", initial: "S", color: "#ec4899" },
 ];
 
 const milestones = [
@@ -145,7 +145,7 @@ function About() {
             {team.map((t, i) => (
               <div className="team-card" key={i}>
                 <div className="team-avatar" style={{ background: t.color }}>
-                  {t.initial}
+                  {t.name.charAt(0)}
                 </div>
                 <h3>{t.name}</h3>
                 <p>{t.role}</p>

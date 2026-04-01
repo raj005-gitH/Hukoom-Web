@@ -174,15 +174,44 @@ function Home() {
         </div>
       </section>
 
-      {/* SERVICES SECTION */}
-      <section className="services">
-        <h2>Our Services</h2>
+      {/* ═══ SERVICES SECTION ═══ */}
+      {/* FIX 1: className changed from "services" → "services-section" to match CSS */}
+      {/* FIX 2: Added fade-section class and servicesRef so scroll animation works */}
+      {/* FIX 3: Now maps over the `services` data array with proper card markup */}
+      <section className="services-section fade-section" ref={servicesRef} id="services">
+        <div className="section-container">
+          <div className="section-header">
+            <span className="section-tag">What We Offer</span>
+            <h2 className="section-title">Our Services</h2>
+            <p className="section-desc">
+              Verified professionals for every job around your home or office.
+            </p>
+          </div>
 
-        <div className="service-grid">
-          <div className="card">⚡ Electrician</div>
-          <div className="card">🚿 Plumber</div>
-          <div className="card">🧹 Cleaner</div>
-          <div className="card">🔧 Mechanic</div>
+          <div className="services-grid">
+            {services.map((service, i) => (
+              <div
+                className="service-card"
+                key={i}
+                style={{ "--card-accent": service.color }}
+              >
+                <div
+                  className="service-icon-wrap"
+                  style={{ background: `${service.color}18` }}
+                >
+                  {service.icon}
+                </div>
+                <h3 className="service-title">{service.title}</h3>
+                <p className="service-desc">{service.desc}</p>
+                <span className="service-link">
+                  Book now
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

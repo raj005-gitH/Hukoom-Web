@@ -5,6 +5,7 @@ import About from "../pages/About";
 import Home from "../pages/Home";
 import Contact from "../pages/Contact";
 import Profile from "../pages/Profile";
+import AIAgent from "../pages/AiAgent";
 
 function AppRoutes() {
   return (
@@ -13,6 +14,7 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />    
       <Route path="/contact" element={<Contact/>}/>
       <Route path="/profile" element={<Profile/>}/>
+      <Route path="/aiagent" element={<AIAgent/>} />
     </Routes>
   );
 }

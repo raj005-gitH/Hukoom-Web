@@ -1,36 +1,228 @@
+import { useState, useRef, useEffect } from "react";
 import "./Contact.css";
 
+/* ─── Fade-In on Scroll Hook ─── */
+function useFadeIn() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) entry.target.classList.add("visible"); },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+  return ref;
+}
+
+/* ─── Contact Info Data ─── */
+const contactInfo = [
+  {
+    icon: "📧",
+    label: "Email Us",
+    value: "support@hukoom.com",
+    desc: "We reply within 24 hours",
+  },
+  {
+    icon: "📞",
+    label: "Call Us",
+    value: "+91 98765 43210",
+    desc: "Mon – Sat, 9 AM to 7 PM",
+  },
+  {
+    icon: "📍",
+    label: "Our Office",
+    value: "New Delhi, India",
+    desc: "Serving across the country",
+  },
+];
+
+/* ═══════════════════════════════════
+   CONTACT COMPONENT
+   ═══════════════════════════════════ */
 function Contact() {
+  const [formState, setFormState] = useState({ name: "", email: "", subject: "", message: "" });
+  const [submitted, setSubmitted] = useState(false);
+  const [focused, setFocused] = useState(null);
+
+  const formRef = useFadeIn();
+  const infoRef = useFadeIn();
+
+  const handleChange = (e) =>
+    setFormState((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
   return (
-    <div className="contact-container">
+    <div className="contact-page">
 
-      {/* HERO */}
+      {/* ── Background orbs ── */}
+      <div className="contact-bg">
+        <div className="contact-orb contact-orb-1"></div>
+        <div className="contact-orb contact-orb-2"></div>
+        <div className="contact-grid"></div>
+      </div>
+
+      {/* ══════════════════════
+          HERO
+          ══════════════════════ */}
       <section className="contact-hero">
-        <h1>Contact Us</h1>
-        <p>We’re here to help. Reach out anytime.</p>
+        <div className="section-container hero-inner">
+          <div className="hero-badge">
+            <span className="badge-dot"></span>
+            Typically replies within 24 hours
+          </div>
+          <h1 className="contact-hero-title">
+            We'd Love to
+            <span className="hero-highlight"> Hear From You</span>
+          </h1>
+          <p className="contact-hero-sub">
+            Have a question, feedback, or need help with a booking?
+            Our team is ready to assist.
+          </p>
+        </div>
       </section>
 
-      {/* CONTACT FORM */}
-      <section className="contact-form-section">
-        <h2>Send us a message</h2>
+      {/* ══════════════════════
+          MAIN GRID
+          ══════════════════════ */}
+      <div className="contact-layout section-container">
 
-        <form className="contact-form">
-          <input type="text" placeholder="Your Name" required />
-          <input type="email" placeholder="Your Email" required />
-          <textarea placeholder="Your Message" rows="5" required></textarea>
+        {/* ── Form ── */}
+        <div className="contact-form-card fade-section" ref={formRef}>
+          <div className="form-card-header">
+            <h2 className="form-card-title">Send a Message</h2>
+            <p className="form-card-desc">Fill in the details below and we'll get back to you shortly.</p>
+          </div>
 
-          <button type="submit">Send Message</button>
-        </form>
-      </section>
+          {!submitted ? (
+            <form className="contact-form" onSubmit={handleSubmit} noValidate>
 
-      {/* CONTACT INFO */}
-      <section className="contact-info">
-        <h2>Other Ways to Reach Us</h2>
-        <p>📧 Email: support@hukoom.com</p>
-        <p>📞 Phone: +91 98765 43210</p>
-        <p>📍 Location: India</p>
-      </section>
+              <div className="form-row">
+                <div className={`form-group ${focused === "name" || formState.name ? "active" : ""}`}>
+                  <label htmlFor="name">Full Name</label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="John Doe"
+                    value={formState.name}
+                    onChange={handleChange}
+                    onFocus={() => setFocused("name")}
+                    onBlur={() => setFocused(null)}
+                    required
+                  />
+                </div>
 
+                <div className={`form-group ${focused === "email" || formState.email ? "active" : ""}`}>
+                  <label htmlFor="email">Email Address</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={formState.email}
+                    onChange={handleChange}
+                    onFocus={() => setFocused("email")}
+                    onBlur={() => setFocused(null)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className={`form-group ${focused === "subject" || formState.subject ? "active" : ""}`}>
+                <label htmlFor="subject">Subject</label>
+                <input
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  placeholder="How can we help?"
+                  value={formState.subject}
+                  onChange={handleChange}
+                  onFocus={() => setFocused("subject")}
+                  onBlur={() => setFocused(null)}
+                />
+              </div>
+
+              <div className={`form-group ${focused === "message" || formState.message ? "active" : ""}`}>
+                <label htmlFor="message">Message</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  placeholder="Tell us what's on your mind..."
+                  value={formState.message}
+                  onChange={handleChange}
+                  onFocus={() => setFocused("message")}
+                  onBlur={() => setFocused(null)}
+                  required
+                ></textarea>
+              </div>
+
+              <button type="submit" className="btn-primary submit-btn">
+                <span>Send Message</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </button>
+
+            </form>
+          ) : (
+            <div className="success-state">
+              <div className="success-icon">✓</div>
+              <h3 className="success-title">Message Sent!</h3>
+              <p className="success-desc">
+                Thanks for reaching out, {formState.name || "there"}. We'll get back to you at{" "}
+                <strong>{formState.email || "your email"}</strong> within 24 hours.
+              </p>
+              <button
+                className="btn-secondary"
+                onClick={() => { setSubmitted(false); setFormState({ name: "", email: "", subject: "", message: "" }); }}
+              >
+                Send Another Message
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ── Contact Info ── */}
+        <div className="contact-info-col fade-section" ref={infoRef}>
+          <h2 className="info-col-title">Other Ways to Reach Us</h2>
+          <p className="info-col-desc">
+            Prefer a direct line? We're available across all channels.
+          </p>
+
+          <div className="info-cards">
+            {contactInfo.map((item, i) => (
+              <div className="info-card" key={i}>
+                <div className="info-icon">{item.icon}</div>
+                <div className="info-text">
+                  <span className="info-label">{item.label}</span>
+                  <span className="info-value">{item.value}</span>
+                  <span className="info-desc">{item.desc}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* FAQ nudge */}
+          <div className="faq-nudge">
+            <span className="faq-nudge-icon">💡</span>
+            <div>
+              <p className="faq-nudge-title">Check our FAQ first</p>
+              <p className="faq-nudge-desc">Most questions are answered in our Help Center — no waiting required.</p>
+            </div>
+            <button className="btn-secondary faq-btn">
+              Help Center
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

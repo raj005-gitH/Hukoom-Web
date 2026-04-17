@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./Profile.css";
 
 /* ─── Fade-In on Scroll Hook ─── */
@@ -51,23 +53,65 @@ const statusMeta = {
   upcoming:  { label: "Upcoming",  className: "status-upcoming"  },
 };
 
-/* ─── Stats ─── */
-const stats = [
-  { value: "12", label: "Total Bookings" },
-  { value: "4.9★", label: "Avg Rating" },
-  { value: "3", label: "Active Services" },
-];
-
 /* ═══════════════════════════════════
    PROFILE COMPONENT
    ═══════════════════════════════════ */
 function Profile() {
+  const navigate = useNavigate();
+  const { user, role, isLoggedIn, logout } = useAuth();
   const [editing, setEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("bookings");
 
   const detailsRef = useFadeIn();
   const bookingsRef = useFadeIn();
   const actionsRef = useFadeIn();
+
+  // Redirect to login if not logged in
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/login");
+    }
+  }, [isLoggedIn, navigate]);
+
+  if (!isLoggedIn || !user) {
+    return null;
+  }
+
+  // Get display values from real user data
+  const isHero = role === "hero";
+  const displayName = isHero ? user.fullname : user.username;
+  const displayEmail = user.email;
+  const displayPhone = user.phone || "Not provided";
+  const displayCity = user.city || "Not provided";
+  const displaySkills = isHero && user.skills ? user.skills.join(", ") : null;
+
+  // Get initials for avatar
+  const initials = displayName
+    ? displayName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "?";
+
+  // Stats
+  const stats = isHero
+    ? [
+        { value: "0", label: "Jobs Done" },
+        { value: "0★", label: "Avg Rating" },
+        { value: displaySkills ? user.skills.length : "0", label: "Skills" },
+      ]
+    : [
+        { value: "0", label: "Total Bookings" },
+        { value: "0★", label: "Avg Rating" },
+        { value: "0", label: "Active Services" },
+      ];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <div className="profile-page">
@@ -88,14 +132,33 @@ function Profile() {
           {/* Avatar card */}
           <div className="profile-card avatar-card">
             <div className="avatar-ring">
-              <div className="avatar-inner">JD</div>
+              <div className="avatar-inner">{initials}</div>
             </div>
-            <h2 className="profile-name">John Doe</h2>
-            <p className="profile-email">johndoe@email.com</p>
+            <h2 className="profile-name">{displayName}</h2>
+            <p className="profile-email">{displayEmail}</p>
             <span className="profile-badge">
               <span className="badge-dot"></span>
-              Verified Member
+              {isHero ? "Verified Hero" : "Verified Member"}
             </span>
+
+            {/* Role tag */}
+            {isHero && (
+              <div className="profile-role-tag hero-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+                Hero Account
+              </div>
+            )}
+            {!isHero && (
+              <div className="profile-role-tag user-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                User Account
+              </div>
+            )}
 
             {/* Stats row */}
             <div className="profile-stats">
@@ -130,13 +193,21 @@ function Profile() {
             <h3 className="card-title">Account Details</h3>
 
             <div className="detail-row">
+              <span className="detail-icon">📧</span>
+              <div className="detail-content">
+                <span className="detail-label">Email</span>
+                <span className="detail-value">{displayEmail}</span>
+              </div>
+            </div>
+
+            <div className="detail-row">
               <span className="detail-icon">📞</span>
               <div className="detail-content">
                 <span className="detail-label">Phone</span>
                 {editing ? (
-                  <input className="detail-input" defaultValue="+91 98765 43210" />
+                  <input className="detail-input" defaultValue={displayPhone} />
                 ) : (
-                  <span className="detail-value">+91 98765 43210</span>
+                  <span className="detail-value">{displayPhone}</span>
                 )}
               </div>
             </div>
@@ -144,35 +215,41 @@ function Profile() {
             <div className="detail-row">
               <span className="detail-icon">📍</span>
               <div className="detail-content">
-                <span className="detail-label">Location</span>
+                <span className="detail-label">City</span>
                 {editing ? (
-                  <input className="detail-input" defaultValue="Delhi, India" />
+                  <input className="detail-input" defaultValue={displayCity} />
                 ) : (
-                  <span className="detail-value">Delhi, India</span>
+                  <span className="detail-value">{displayCity}</span>
                 )}
               </div>
             </div>
 
-            <div className="detail-row">
-              <span className="detail-icon">📅</span>
-              <div className="detail-content">
-                <span className="detail-label">Member Since</span>
-                <span className="detail-value">January 2025</span>
+            {isHero && displaySkills && (
+              <div className="detail-row">
+                <span className="detail-icon">🛠️</span>
+                <div className="detail-content">
+                  <span className="detail-label">Skills</span>
+                  <div className="skills-tags">
+                    {user.skills.map((skill, i) => (
+                      <span className="skill-tag" key={i}>{skill}</span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="detail-row">
-              <span className="detail-icon">🌐</span>
+              <span className="detail-icon">👤</span>
               <div className="detail-content">
-                <span className="detail-label">Language</span>
-                <span className="detail-value">English, Hindi</span>
+                <span className="detail-label">Account Type</span>
+                <span className="detail-value">{isHero ? "Hero (Service Provider)" : "User (Customer)"}</span>
               </div>
             </div>
           </div>
 
           {/* Danger zone */}
           <div className="profile-card danger-card fade-section" ref={actionsRef}>
-            <button className="btn-logout">
+            <button className="btn-logout" onClick={handleLogout}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               Log Out
             </button>
@@ -251,10 +328,66 @@ function Profile() {
                 </div>
               ))}
             </div>
-          )}
+          )}          
 
-        </main>
+        </main>        
       </div>
+
+      {/* ═══ FOOTER ═══ */}
+      <footer className="footer" id="footer">
+        <div className="section-container">
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <div className="footer-logo">
+                <div className="nav-logo-icon">H</div>
+                <span className="nav-logo-text">Hu<span>koom</span></span>
+              </div>
+              <p className="footer-tagline">
+                Your trusted platform for reliable local services. Quality professionals, one tap away.
+              </p>
+            </div>
+
+            <div className="footer-col">
+              <h4>Services</h4>
+              <ul>
+                <li><a href="#">Electrician</a></li>
+                <li><a href="#">Plumber</a></li>
+                <li><a href="#">Cleaning</a></li>
+                <li><a href="#">Mechanic</a></li>
+              </ul>
+            </div>
+
+            <div className="footer-col">
+              <h4>Company</h4>
+              <ul>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Press</a></li>
+              </ul>
+            </div>
+
+            <div className="footer-col">
+              <h4>Support</h4>
+              <ul>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="footer-bottom">
+            <p>© 2026 Hukoom. All rights reserved.</p>
+            <div className="footer-socials">
+              <a href="#" aria-label="Twitter" className="social-link">𝕏</a>
+              <a href="#" aria-label="Instagram" className="social-link">📸</a>
+              <a href="#" aria-label="LinkedIn" className="social-link">in</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

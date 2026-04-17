@@ -327,6 +327,47 @@
   letter-spacing: 0.6px;
 }
 
+/* Header right group */
+.chat-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Clear chat button */
+.chat-clear-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.chat-clear-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+/* Bubble timestamp */
+.bubble-time {
+  display: block;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 6px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+.chat-bubble.user .bubble-time {
+  text-align: right;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 /* ─── Messages ─── */
 .chat-messages {
   flex: 1;

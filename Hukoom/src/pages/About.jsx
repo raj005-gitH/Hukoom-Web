@@ -31,10 +31,10 @@ const team = [
 ];
 
 const milestones = [
-  { year: "2023", title: "Founded", desc: "Hukoom was born with a mission to simplify local services." },
-  { year: "2024", title: "10K Users", desc: "Crossed 10,000 active users across 5 major cities." },
-  { year: "2025", title: "AI Integration", desc: "Launched AI-powered service matching and smart scheduling." },
-  { year: "2026", title: "Pan-India", desc: "Expanded to 50+ cities with 2,500+ verified professionals." },
+  { year: "January-2026", title: "Founded", desc: "Hukoom was born with a mission to simplify local services." },
+  { year: "April-2026", title: "Launch", desc: "First time to be used in Greater Noida" },
+  { year: "May-2026", title: "AI Integration", desc: "Upcoming: AI-powered service matching and smart scheduling" },
+  { year: "December-2026", title: "Target - 10K Users", desc: "Expanded to 10+ cities with 2,500+ verified professionals." },
 ];
 
 function About() {
@@ -175,6 +175,62 @@ function About() {
           </div>
         </div>
       </section>
+
+      {/* ═══ FOOTER ═══ */}
+      <footer className="footer" id="footer">
+        <div className="section-container">
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <div className="footer-logo">
+                <div className="nav-logo-icon">H</div>
+                <span className="nav-logo-text">Hu<span>koom</span></span>
+              </div>
+              <p className="footer-tagline">
+                Your trusted platform for reliable local services. Quality professionals, one tap away.
+              </p>
+            </div>
+
+            <div className="footer-col">
+              <h4>Services</h4>
+              <ul>
+                <li><a href="#">Electrician</a></li>
+                <li><a href="#">Plumber</a></li>
+                <li><a href="#">Cleaning</a></li>
+                <li><a href="#">Mechanic</a></li>
+              </ul>
+            </div>
+
+            <div className="footer-col">
+              <h4>Company</h4>
+              <ul>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Press</a></li>
+              </ul>
+            </div>
+
+            <div className="footer-col">
+              <h4>Support</h4>
+              <ul>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="footer-bottom">
+            <p>© 2026 Hukoom. All rights reserved.</p>
+            <div className="footer-socials">
+              <a href="#" aria-label="Twitter" className="social-link">𝕏</a>
+              <a href="#" aria-label="Instagram" className="social-link">📸</a>
+              <a href="#" aria-label="LinkedIn" className="social-link">in</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

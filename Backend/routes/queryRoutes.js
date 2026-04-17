@@ -1,0 +1,248 @@
+const express = require("express");
+const router = express.Router();
+const ServiceQuery = require("../models/ServiceQuery");
+
+// Predefined areas for supported cities
+const CITY_AREAS = {
+  noida: [
+    "Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5",
+    "Sector 6", "Sector 7", "Sector 8", "Sector 9", "Sector 10",
+    "Sector 11", "Sector 12", "Sector 14", "Sector 15", "Sector 15A",
+    "Sector 16", "Sector 16A", "Sector 17", "Sector 18", "Sector 19",
+    "Sector 20", "Sector 21", "Sector 22", "Sector 25", "Sector 26",
+    "Sector 27", "Sector 29", "Sector 30", "Sector 31", "Sector 32",
+    "Sector 33", "Sector 34", "Sector 35", "Sector 36", "Sector 37",
+    "Sector 39", "Sector 40", "Sector 41", "Sector 44", "Sector 45",
+    "Sector 46", "Sector 47", "Sector 48", "Sector 49", "Sector 50",
+    "Sector 51", "Sector 52", "Sector 53", "Sector 54", "Sector 55",
+    "Sector 56", "Sector 57", "Sector 58", "Sector 59", "Sector 60",
+    "Sector 61", "Sector 62", "Sector 63", "Sector 63A",
+    "Sector 71", "Sector 72", "Sector 73", "Sector 74", "Sector 75",
+    "Sector 76", "Sector 77", "Sector 78", "Sector 79",
+    "Sector 82", "Sector 83", "Sector 84", "Sector 85",
+    "Sector 92", "Sector 93", "Sector 93A", "Sector 93B",
+    "Sector 94", "Sector 95", "Sector 96", "Sector 97", "Sector 98",
+    "Sector 99", "Sector 100", "Sector 104", "Sector 107",
+    "Sector 108", "Sector 110", "Sector 115", "Sector 116",
+    "Sector 117", "Sector 118", "Sector 119", "Sector 120",
+    "Sector 121", "Sector 122", "Sector 125", "Sector 126",
+    "Sector 127", "Sector 128", "Sector 129", "Sector 130",
+    "Sector 131", "Sector 132", "Sector 133", "Sector 134",
+    "Sector 135", "Sector 136", "Sector 137", "Sector 140",
+    "Sector 140A", "Sector 141", "Sector 142", "Sector 143",
+    "Sector 143B", "Sector 144", "Sector 145", "Sector 146",
+    "Sector 148", "Sector 150", "Sector 151", "Sector 152",
+    "Sector 153", "Sector 155", "Sector 156", "Sector 157",
+    "Sector 158", "Sector 159", "Sector 160", "Sector 161",
+    "Sector 162", "Sector 163", "Sector 164", "Sector 165",
+    "Sector 166", "Sector 167", "Sector 168",
+    "Alpha 1", "Alpha 2",
+    "Beta 1", "Beta 2",
+    "Gamma 1", "Gamma 2",
+    "Delta 1", "Delta 2", "Delta 3",
+    "Phi 1", "Phi 2", "Phi 3", "Phi 4",
+    "Chi 1", "Chi 2", "Chi 3", "Chi 4", "Chi 5",
+    "Sigma 1", "Sigma 2", "Sigma 3", "Sigma 4",
+    "Omicron 1", "Omicron 2", "Omicron 3",
+    "Eta 1", "Eta 2",
+    "Mu 1", "Mu 2",
+    "Zeta 1", "Zeta 2"
+  ],
+  "greater noida": [
+    "Alpha 1", "Alpha 2",
+    "Beta 1", "Beta 2",
+    "Gamma 1", "Gamma 2",
+    "Delta 1", "Delta 2", "Delta 3",
+    "Omega 1", "Omega 2", "Omega 3", "Omega 4",
+    "Xu 1", "Xu 2", "Xu 3",
+    "Swarn Nagri",
+    "Knowledge Park 1", "Knowledge Park 2", "Knowledge Park 3",
+    "Knowledge Park 4", "Knowledge Park 5",
+    "Pari Chowk",
+    "Jagat Farm",
+    "Surajpur",
+    "Kasna",
+    "Dadri",
+    "Bisrakh",
+    "Ecotech 1", "Ecotech 2", "Ecotech 3",
+    "Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5",
+    "Sector 6", "Sector 7", "Sector 8", "Sector 9", "Sector 10",
+    "Sector 11", "Sector 12", "Sector 16", "Sector 16B", "Sector 16C",
+    "Sector 17", "Sector 27", "Sector 29", "Sector 30",
+    "Sector 32", "Sector 33", "Sector 34", "Sector 35", "Sector 36",
+    "Sector 37", "Sector 38",
+    "Gaur City 1", "Gaur City 2",
+    "Shahberi",
+    "Techzone 4",
+    "Sector Pi 1", "Sector Pi 2", "Sector Pi 3",
+    "Sector Mu 1", "Sector Mu 2",
+    "Sector Zeta 1", "Sector Zeta 2"
+  ]
+};
+
+// Helper: expire stale queries
+async function expireStaleQueries() {
+  await ServiceQuery.updateMany(
+    { status: "open", expiresAt: { $lt: new Date() } },
+    { $set: { status: "expired" } }
+  );
+}
+
+// GET /api/city-areas/:city — Get predefined areas for a city
+router.get("/city-areas/:city", (req, res) => {
+  const city = req.params.city.toLowerCase().trim();
+  const areas = CITY_AREAS[city];
+  if (!areas) {
+    return res.status(404).json({ message: "City not supported yet", supportedCities: Object.keys(CITY_AREAS) });
+  }
+  res.json({ city, areas });
+});
+
+// GET /api/supported-cities — Get list of supported cities
+router.get("/supported-cities", (req, res) => {
+  res.json({ cities: Object.keys(CITY_AREAS).map(c => c.charAt(0).toUpperCase() + c.slice(1)) });
+});
+
+// POST /api/queries — Create a new service query
+router.post("/queries", async (req, res) => {
+  try {
+    const { userName, userId, city, area, workDescription, price, expiryMinutes } = req.body;
+
+    // Validate required fields
+    if (!userName || !userId || !city || !area || !workDescription || !price || !expiryMinutes) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Validate expiry (15 min to 15 days = 21600 min)
+    const minutes = Number(expiryMinutes);
+    if (minutes < 15 || minutes > 21600) {
+      return res.status(400).json({ message: "Expiry must be between 15 minutes and 15 days" });
+    }
+
+    // Validate city
+    const cityLower = city.toLowerCase().trim();
+    if (!CITY_AREAS[cityLower]) {
+      return res.status(400).json({ message: "City not supported", supportedCities: Object.keys(CITY_AREAS) });
+    }
+
+    // Validate area
+    if (!CITY_AREAS[cityLower].includes(area)) {
+      return res.status(400).json({ message: "Area not found in this city" });
+    }
+
+    const expiresAt = new Date(Date.now() + minutes * 60 * 1000);
+
+    const query = new ServiceQuery({
+      userName,
+      userId,
+      city: cityLower,
+      area,
+      workDescription,
+      price: Number(price),
+      expiresAt,
+    });
+
+    await query.save();
+
+    res.status(201).json({ message: "Query posted successfully", query });
+  } catch (error) {
+    console.log("Error creating query:", error);
+    res.status(500).json({ message: "Error creating query", error: error.message });
+  }
+});
+
+// GET /api/queries/areas/:city — Get areas with active query counts for a city (hero view)
+router.get("/queries/areas/:city", async (req, res) => {
+  try {
+    await expireStaleQueries();
+
+    const city = req.params.city.toLowerCase().trim();
+    if (!CITY_AREAS[city]) {
+      return res.status(404).json({ message: "City not supported" });
+    }
+
+    const areaCounts = await ServiceQuery.aggregate([
+      { $match: { city, status: { $in: ["open", "in_progress"] } } },
+      { $group: { _id: "$area", count: { $sum: 1 }, openCount: { $sum: { $cond: [{ $eq: ["$status", "open"] }, 1, 0] } } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    res.json({ city, areas: areaCounts });
+  } catch (error) {
+    console.log("Error fetching areas:", error);
+    res.status(500).json({ message: "Error fetching areas", error: error.message });
+  }
+});
+
+// GET /api/queries/:city/:area — Get all active queries for an area (hero chatroom view)
+router.get("/queries/:city/:area", async (req, res) => {
+  try {
+    await expireStaleQueries();
+
+    const city = req.params.city.toLowerCase().trim();
+    const area = decodeURIComponent(req.params.area).trim();
+
+    const queries = await ServiceQuery.find({
+      city,
+      area,
+      status: { $in: ["open", "in_progress"] }
+    }).sort({ createdAt: -1 });
+
+    res.json({ city, area, queries });
+  } catch (error) {
+    console.log("Error fetching queries:", error);
+    res.status(500).json({ message: "Error fetching queries", error: error.message });
+  }
+});
+
+// PATCH /api/queries/:id/accept — Hero accepts a query
+router.patch("/queries/:id/accept", async (req, res) => {
+  try {
+    const { heroId, heroName } = req.body;
+
+    if (!heroId || !heroName) {
+      return res.status(400).json({ message: "heroId and heroName are required" });
+    }
+
+    const query = await ServiceQuery.findById(req.params.id);
+    if (!query) {
+      return res.status(404).json({ message: "Query not found" });
+    }
+
+    // Check if already expired
+    if (query.expiresAt < new Date()) {
+      query.status = "expired";
+      await query.save();
+      return res.status(400).json({ message: "This query has expired" });
+    }
+
+    if (query.status !== "open") {
+      return res.status(400).json({ message: `Query is already ${query.status}` });
+    }
+
+    query.status = "in_progress";
+    query.heroId = heroId;
+    query.heroName = heroName;
+    await query.save();
+
+    res.json({ message: "Query accepted successfully", query });
+  } catch (error) {
+    console.log("Error accepting query:", error);
+    res.status(500).json({ message: "Error accepting query", error: error.message });
+  }
+});
+
+// GET /api/queries/user/:userId — Get all queries by a specific user
+router.get("/queries/user/:userId", async (req, res) => {
+  try {
+    await expireStaleQueries();
+
+    const queries = await ServiceQuery.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+    res.json({ queries });
+  } catch (error) {
+    console.log("Error fetching user queries:", error);
+    res.status(500).json({ message: "Error fetching user queries", error: error.message });
+  }
+});
+
+module.exports = router;

@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 /* ─── Animated Counter Hook ─── */
@@ -81,6 +83,26 @@ const testimonials = [
    ═══════════════════════════════════ */
 function Home() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const { user, role, isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+
+  /* Handler for CTA / Get Started buttons */
+  const handleGetStarted = () => {
+    if (!isLoggedIn) {
+      navigate("/login");
+    } else if (role === "hero") {
+      navigate("/hero-dashboard");
+    } else {
+      navigate("/post-query");
+    }
+  };
+
+  // Get display name
+  const displayName = user
+    ? role === "hero"
+      ? user.fullname
+      : user.username
+    : "";
 
   /* Counters */
   const [users, usersRef] = useCounter(15000, 2500);
@@ -104,6 +126,32 @@ function Home() {
 
   return (
     <div className="home-page">
+
+      {/* ═══ WELCOME BANNER ═══ */}
+      {isLoggedIn && (
+        <div className="welcome-banner" id="welcome-banner">
+          <div className="welcome-banner-content">
+            <div className="welcome-avatar">
+              {displayName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2)}
+            </div>
+            <div className="welcome-text">
+              <span className="welcome-greeting">
+                Hi, <strong>{displayName}</strong> 👋
+              </span>
+              <span className="welcome-role">
+                {role === "hero"
+                  ? "Welcome back, Hero! Ready to offer your services?"
+                  : "Welcome back! Find trusted services near you."}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ═══ HERO SECTION ═══ */}
       <section className="hero-section" id="hero">
@@ -133,14 +181,14 @@ function Home() {
           </p>
 
           <div className="hero-actions">
-            <button className="btn-primary" id="hero-explore-btn">
-              <span>Explore Services</span>
+            <button className="btn-primary" id="hero-explore-btn" onClick={handleGetStarted}>
+              <span>{isLoggedIn && role === "hero" ? "View Requests" : "Explore Services"}</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </button>
-            <button className="btn-secondary" id="hero-provider-btn">
-              Become a Provider
+            <button className="btn-secondary" id="hero-provider-btn" onClick={() => navigate(isLoggedIn ? (role === 'hero' ? '/hero-dashboard' : '/post-query') : '/login')}>
+              {isLoggedIn ? (role === "hero" ? "Dashboard" : "Post a Request") : "Become a Provider"}
             </button>
           </div>
 
@@ -293,7 +341,7 @@ function Home() {
               Join thousands of satisfied users. Book a trusted professional in under 60 seconds.
             </p>
             <div className="cta-buttons">
-              <button className="btn-primary btn-lg" id="cta-start-btn">
+              <button className="btn-primary btn-lg" id="cta-start-btn" onClick={handleGetStarted}>
                 <span>Get Started — It's Free</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M12 5l7 7-7 7" />

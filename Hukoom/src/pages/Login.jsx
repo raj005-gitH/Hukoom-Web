@@ -23,7 +23,7 @@ function Login() {
     setAadhaarPreview(null);
     setSubmitSuccess(false);
     setErrorMessage("");
-    setIsLoginMode(false);
+    setIsLoginMode(true);
   };
 
   const handleInputChange = (e) => {
@@ -119,7 +119,7 @@ function Login() {
     setAadhaarPreview(null);
     setSubmitSuccess(false);
     setErrorMessage("");
-    setIsLoginMode(false);
+    setIsLoginMode(true);
   };
 
   const toggleMode = () => {
@@ -179,7 +179,7 @@ function Login() {
                     <circle cx="12" cy="7" r="4" />
                   </svg>
                 </div>
-                <h2 className="role-card-title">Login as User</h2>
+                <h2 className="role-card-title">Continue as User</h2>
                 <p className="role-card-desc">
                   Request services, track orders, and connect with professional
                   heroes in your city.
@@ -265,7 +265,7 @@ function Login() {
                   </svg>
                 </div>
                 {/* <div className="hero-badge-tag">PRO</div> */}
-                <h2 className="role-card-title">Login as Hero</h2>
+                <h2 className="role-card-title">Continue as Hero</h2>
                 <p className="role-card-desc">
                   Offer your skills, grow your business, and become a trusted
                   service provider on the platform.
@@ -385,19 +385,21 @@ function Login() {
 
               {/* Mode toggle tabs */}
               <div className="auth-mode-toggle">
-                <button
-                  className={`auth-mode-btn ${!isLoginMode ? "active" : ""}`}
-                  onClick={() => toggleMode()}
-                  type="button"
-                >
-                  Sign Up
-                </button>
+                
                 <button
                   className={`auth-mode-btn ${isLoginMode ? "active" : ""}`}
                   onClick={() => toggleMode()}
                   type="button"
                 >
-                  Sign In
+                  Login🔥
+                </button>
+
+                <button
+                  className={`auth-mode-btn ${!isLoginMode ? "active" : ""}`}
+                  onClick={() => toggleMode()}
+                  type="button"
+                >
+                  Sign Up / New User⚡
                 </button>
               </div>
 
@@ -673,18 +675,18 @@ function Login() {
               {/* Mode toggle tabs */}
               <div className="auth-mode-toggle">
                 <button
-                  className={`auth-mode-btn ${!isLoginMode ? "active" : ""}`}
-                  onClick={() => toggleMode()}
-                  type="button"
-                >
-                  Sign Up
-                </button>
-                <button
                   className={`auth-mode-btn ${isLoginMode ? "active" : ""}`}
                   onClick={() => toggleMode()}
                   type="button"
                 >
-                  Sign In
+                  Login🔥
+                </button>
+                <button
+                  className={`auth-mode-btn ${!isLoginMode ? "active" : ""}`}
+                  onClick={() => toggleMode()}
+                  type="button"
+                >
+                  Register as a Hero⚡
                 </button>
               </div>
 

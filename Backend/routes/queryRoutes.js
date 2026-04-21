@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ServiceQuery = require("../models/ServiceQuery");
+const Hero = require("../models/Hero");
 
 // Predefined areas for supported cities
 const CITY_AREAS = {
@@ -82,9 +83,18 @@ const CITY_AREAS = {
 
 // Helper: expire stale queries
 async function expireStaleQueries() {
+  const now = new Date();
+  
+  // 1. Expire open queries that haven't been picked up
   await ServiceQuery.updateMany(
-    { status: "open", expiresAt: { $lt: new Date() } },
+    { status: "open", expiresAt: { $lt: now } },
     { $set: { status: "expired" } }
+  );
+
+  // 2. Auto-complete in-progress queries that reached expiry
+  await ServiceQuery.updateMany(
+    { status: "in_progress", expiresAt: { $lt: now } },
+    { $set: { status: "completed" } }
   );
 }
 
@@ -174,7 +184,34 @@ router.get("/queries/areas/:city", async (req, res) => {
   }
 });
 
+// GET /api/queries/user/:userId — Get all queries posted by a specific user
+router.get("/queries/user/:userId", async (req, res) => {
+  try {
+    await expireStaleQueries();
+
+    const queries = await ServiceQuery.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+    res.json({ queries });
+  } catch (error) {
+    console.log("Error fetching user queries:", error);
+    res.status(500).json({ message: "Error fetching user queries", error: error.message });
+  }
+});
+
+// GET /api/queries/hero/:heroId — Get all queries accepted by a specific hero
+router.get("/queries/hero/:heroId", async (req, res) => {
+  try {
+    await expireStaleQueries();
+
+    const queries = await ServiceQuery.find({ heroId: req.params.heroId }).sort({ createdAt: -1 });
+    res.json({ queries });
+  } catch (error) {
+    console.log("Error fetching hero queries:", error);
+    res.status(500).json({ message: "Error fetching hero queries", error: error.message });
+  }
+});
+
 // GET /api/queries/:city/:area — Get all active queries for an area (hero chatroom view)
+// NOTE: This wildcard route MUST come AFTER all specific /queries/... routes
 router.get("/queries/:city/:area", async (req, res) => {
   try {
     await expireStaleQueries();
@@ -220,6 +257,17 @@ router.patch("/queries/:id/accept", async (req, res) => {
       return res.status(400).json({ message: `Query is already ${query.status}` });
     }
 
+    // Check if hero is barred (3 cancellations in last 24h)
+    const hero = await Hero.findById(heroId);
+    if (!hero) return res.status(404).json({ message: "Hero not found" });
+
+    if (hero.barredUntil && hero.barredUntil > new Date()) {
+      const waitTime = Math.ceil((hero.barredUntil - new Date()) / (1000 * 60 * 60));
+      return res.status(403).json({ 
+        message: `You are temporarily barred from accepting new work due to frequent cancellations. Please try again in ${waitTime} hour(s).` 
+      });
+    }
+
     query.status = "in_progress";
     query.heroId = heroId;
     query.heroName = heroName;
@@ -232,16 +280,70 @@ router.patch("/queries/:id/accept", async (req, res) => {
   }
 });
 
-// GET /api/queries/user/:userId — Get all queries by a specific user
-router.get("/queries/user/:userId", async (req, res) => {
+// PATCH /api/queries/:id/complete — User marks query as completed
+router.patch("/queries/:id/complete", async (req, res) => {
   try {
-    await expireStaleQueries();
+    const { userId } = req.body;
+    const query = await ServiceQuery.findById(req.params.id);
 
-    const queries = await ServiceQuery.find({ userId: req.params.userId }).sort({ createdAt: -1 });
-    res.json({ queries });
+    if (!query) return res.status(404).json({ message: "Query not found" });
+    if (query.userId.toString() !== userId) {
+      return res.status(403).json({ message: "Only the user who posted this query can mark it as completed" });
+    }
+    if (query.status !== "in_progress") {
+      return res.status(400).json({ message: `Cannot complete a query that is ${query.status}` });
+    }
+
+    query.status = "completed";
+    await query.save();
+    res.json({ message: "Work marked as completed successfully", query });
   } catch (error) {
-    console.log("Error fetching user queries:", error);
-    res.status(500).json({ message: "Error fetching user queries", error: error.message });
+    res.status(500).json({ message: "Error completing query", error: error.message });
+  }
+});
+
+// PATCH /api/queries/:id/cancel — Hero cancels accepted work
+router.patch("/queries/:id/cancel", async (req, res) => {
+  try {
+    const { heroId } = req.body;
+    const query = await ServiceQuery.findById(req.params.id);
+
+    if (!query) return res.status(404).json({ message: "Query not found" });
+    if (!query.heroId || query.heroId.toString() !== heroId) {
+      return res.status(403).json({ message: "Only the hero who accepted this work can cancel it" });
+    }
+    if (query.status !== "in_progress") {
+      return res.status(400).json({ message: "Only in-progress work can be cancelled" });
+    }
+
+    // Update Query: move back to open
+    query.status = "open";
+    query.heroId = null;
+    query.heroName = null;
+    await query.save();
+
+    // Update Hero: record cancellation and check limit
+    const hero = await Hero.findById(heroId);
+    if (hero) {
+      const now = new Date();
+      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      
+      // Filter previous cancellations within last 24h
+      hero.cancellations = hero.cancellations.filter(date => date > twentyFourHoursAgo);
+      hero.cancellations.push(now);
+
+      if (hero.cancellations.length >= 3) {
+        hero.barredUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      }
+      await hero.save();
+    }
+
+    res.json({ 
+      message: "Work cancelled successfully. The query is now open for other heroes.",
+      cancellationsCount: hero ? hero.cancellations.length : 0 
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error cancelling query", error: error.message });
   }
 });
 

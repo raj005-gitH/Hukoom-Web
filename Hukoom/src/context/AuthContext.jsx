@@ -3,23 +3,22 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null); // 'user' or 'hero'
-
-  // Load from localStorage on mount
-  useEffect(() => {
+  // Initialize state synchronously from localStorage to prevent flash of "logged out" state
+  const [user, setUser] = useState(() => {
     try {
       const savedUser = localStorage.getItem("hukoom_user");
-      const savedRole = localStorage.getItem("hukoom_role");
-      if (savedUser && savedRole) {
-        setUser(JSON.parse(savedUser));
-        setRole(savedRole);
-      }
+      return savedUser ? JSON.parse(savedUser) : null;
     } catch {
       localStorage.removeItem("hukoom_user");
-      localStorage.removeItem("hukoom_role");
+      return null;
     }
-  }, []);
+  });
+
+  const [role, setRole] = useState(() => {
+    return localStorage.getItem("hukoom_role") || null;
+  });
+
+  const [isLoading, setIsLoading] = useState(false); // No longer strictly needed for hydration, but useful for other async auth tasks
 
   const login = (userData, userRole) => {
     setUser(userData);
@@ -36,7 +35,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, login, logout, isLoggedIn: !!user }}>
+    <AuthContext.Provider value={{ user, role, login, logout, isLoggedIn: !!user, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -473,3 +473,79 @@
     margin-top: 8px;
   }
 }
+
+/* ─── Login Required View ─── */
+.login-required-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  gap: 16px;
+  animation: fadeIn 0.6s var(--ease-out);
+}
+.login-lock-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.login-req-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--white);
+}
+.login-req-desc {
+  font-size: 15px;
+  color: var(--gray-400);
+  line-height: 1.6;
+  max-width: 400px;
+}
+.login-req-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* ─── Misc UI ─── */
+.form-error-msg {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  animation: shake 0.4s var(--ease-out);
+}
+
+.spinner-small {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

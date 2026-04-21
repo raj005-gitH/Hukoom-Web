@@ -19,7 +19,7 @@ const EXPIRY_PRESETS = [
 ];
 
 function PostQuery() {
-  const { user, role, isLoggedIn } = useAuth();
+  const { user, role, isLoggedIn, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const [step, setStep] = useState(1);
@@ -37,12 +37,14 @@ function PostQuery() {
 
   // Redirect if not logged in as user
   useEffect(() => {
+    if (isLoading) return; // Wait for auth hydration
+    
     if (!isLoggedIn) {
       navigate("/login");
     } else if (role === "hero") {
       navigate("/hero-dashboard");
     }
-  }, [isLoggedIn, role, navigate]);
+  }, [isLoggedIn, isLoading, role, navigate]);
 
   // Fetch supported cities
   useEffect(() => {
@@ -109,6 +111,7 @@ function PostQuery() {
     setError("");
   };
 
+  if (isLoading) return null;
   if (!isLoggedIn || role !== "user") return null;
 
   /* ═══ SUCCESS SCREEN ═══ */

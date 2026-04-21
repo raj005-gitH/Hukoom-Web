@@ -27,6 +27,16 @@ const heroSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    cancellations: [
+        {
+            type: Date,
+            default: Date.now,
+        }
+    ],
+    barredUntil: {
+        type: Date,
+        default: null,
+    },
 });
 
 module.exports = mongoose.model("Hero", heroSchema);

@@ -5,6 +5,7 @@ const userRoutes = require("./routes/userRoutes");
 const heroRoutes = require("./routes/heroRoutes");
 const queryRoutes = require("./routes/queryRoutes");
 const aiRoutes = require("./routes/aiRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 const cors = require("cors"); //cross-origin resource sharing
 
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api", userRoutes);
 app.use("/api", heroRoutes);
 app.use("/api", queryRoutes);
 app.use("/api", aiRoutes);
+app.use("/api", messageRoutes);
 
 app.listen(PORT, () => {
   console.log("Server is running on port 3000");

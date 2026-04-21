@@ -33,7 +33,7 @@ function timeLeft(expiresAt) {
 }
 
 function HeroDashboard() {
-  const { user, role, isLoggedIn } = useAuth();
+  const { user, role, isLoggedIn, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const [view, setView] = useState("cities"); // cities | areas | chatroom
@@ -48,12 +48,14 @@ function HeroDashboard() {
 
   // Redirect if not logged in as hero
   useEffect(() => {
+    if (isLoading) return; // Wait for auth hydration
+
     if (!isLoggedIn) {
       navigate("/login");
     } else if (role !== "hero") {
       navigate("/");
     }
-  }, [isLoggedIn, role, navigate]);
+  }, [isLoggedIn, isLoading, role, navigate]);
 
   // Fetch supported cities
   useEffect(() => {
@@ -138,6 +140,7 @@ function HeroDashboard() {
     }
   };
 
+  if (isLoading) return null;
   if (!isLoggedIn || role !== "hero") return null;
 
   return (

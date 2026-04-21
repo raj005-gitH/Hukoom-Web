@@ -53,7 +53,7 @@ const AIAgent = () => {
   /* Load chat history if logged in */
   useEffect(() => {
     if (isLoggedIn && user?._id) {
-      axios.get(`http://localhost:3000/api/ai/history/${user._id}`)
+      axios.get(`${import.meta.env.VITE_API_URL}/api/ai/history/${user._id}`)
         .then(res => {
           if (res.data.messages && res.data.messages.length > 0) {
             const mapped = res.data.messages.map(m => ({
@@ -78,7 +78,7 @@ const AIAgent = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:3000/api/ai", {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/ai`, {
         prompt,
         userId: user?._id || "anonymous",
         userName: user ? (role === "hero" ? user.fullname : user.username) : "Guest",

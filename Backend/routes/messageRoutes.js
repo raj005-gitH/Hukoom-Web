@@ -28,7 +28,7 @@ router.post("/contact", async (req, res) => {
       messageId: newMessage._id 
     });
   } catch (error) {
-    console.error("Error saving contact message:", error);
+    console.error("Error saving contact message:", error.message);
     res.status(500).json({ message: "An error occurred while sending your message. Please try again later." });
   }
 });

@@ -52,8 +52,8 @@ function Login() {
         // ─── LOGIN ───
         const endpoint =
           selectedRole === "hero"
-            ? "http://localhost:3000/api/login-hero"
-            : "http://localhost:3000/api/login-user";
+            ? `${import.meta.env.VITE_API_URL}/api/login-hero`
+            : `${import.meta.env.VITE_API_URL}/api/login-user`;
 
         const response = await axios.post(endpoint, {
           email: formData.email,
@@ -71,8 +71,8 @@ function Login() {
         // ─── SIGNUP ───
         const endpoint =
           selectedRole === "hero"
-            ? "http://localhost:3000/api/register-hero"
-            : "http://localhost:3000/api/register-user";
+            ? `${import.meta.env.VITE_API_URL}/api/register-hero`
+            : `${import.meta.env.VITE_API_URL}/api/register-user`;
 
         let payload;
         if (selectedRole === "hero") {

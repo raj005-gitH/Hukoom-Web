@@ -48,7 +48,7 @@ function PostQuery() {
 
   // Fetch supported cities
   useEffect(() => {
-    axios.get("http://localhost:3000/api/supported-cities")
+    axios.get(`${import.meta.env.VITE_API_URL}/api/supported-cities`)
       .then(res => setCities(res.data.cities))
       .catch(() => setCities(["Noida", "Greater Noida"]));
   }, []);
@@ -59,7 +59,7 @@ function PostQuery() {
     setAreas([]);
     setArea("");
     setAreaSearch("");
-    axios.get(`http://localhost:3000/api/city-areas/${city.toLowerCase()}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/api/city-areas/${city.toLowerCase()}`)
       .then(res => setAreas(res.data.areas))
       .catch(() => setAreas([]));
   }, [city]);
@@ -82,7 +82,7 @@ function PostQuery() {
     setError("");
 
     try {
-      await axios.post("http://localhost:3000/api/queries", {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/queries`, {
         userName: user.username,
         userId: user._id,
         city,

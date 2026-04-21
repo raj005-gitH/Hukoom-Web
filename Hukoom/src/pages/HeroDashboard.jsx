@@ -59,7 +59,7 @@ function HeroDashboard() {
 
   // Fetch supported cities
   useEffect(() => {
-    axios.get("http://localhost:3000/api/supported-cities")
+    axios.get(`${import.meta.env.VITE_API_URL}/api/supported-cities`)
       .then(res => setCities(res.data.cities))
       .catch(() => setCities(["Noida", "Greater Noida"]));
   }, []);
@@ -68,7 +68,7 @@ function HeroDashboard() {
   const fetchAreas = useCallback(async (city) => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/api/queries/areas/${city.toLowerCase()}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/queries/areas/${city.toLowerCase()}`);
       setAreas(res.data.areas);
     } catch {
       setAreas([]);
@@ -81,7 +81,7 @@ function HeroDashboard() {
   const fetchQueries = useCallback(async (city, area) => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/api/queries/${city.toLowerCase()}/${encodeURIComponent(area)}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/queries/${city.toLowerCase()}/${encodeURIComponent(area)}`);
       setQueries(res.data.queries);
     } catch {
       setQueries([]);
@@ -116,7 +116,7 @@ function HeroDashboard() {
   const handleAccept = async (queryId) => {
     setAccepting(queryId);
     try {
-      await axios.patch(`http://localhost:3000/api/queries/${queryId}/accept`, {
+      await axios.patch(`${import.meta.env.VITE_API_URL}/api/queries/${queryId}/accept`, {
         heroId: user._id,
         heroName: user.fullname,
       });

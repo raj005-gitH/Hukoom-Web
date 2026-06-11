@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const heroRoutes = require("./routes/heroRoutes");
 const queryRoutes = require("./routes/queryRoutes");
@@ -15,13 +16,10 @@ app.use(express.json());
 
 connectDB();
 
-const corsOptions = {
-  origin: ["http://localhost:5173", "https://hukoom-web.onrender.com/"],
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 // Mount routes
+app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", heroRoutes);
 app.use("/api", queryRoutes);

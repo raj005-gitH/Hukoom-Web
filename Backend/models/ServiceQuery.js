@@ -21,6 +21,11 @@ const serviceQuerySchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  houseNumber: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   workDescription: {
     type: String,
     required: true,
@@ -33,7 +38,7 @@ const serviceQuerySchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["open", "in_progress", "expired", "completed"],
+    enum: ["open", "in_progress", "expired", "completed", "rejected"],
     default: "open",
   },
   heroId: {

@@ -3,81 +3,37 @@ const router = express.Router();
 const ServiceQuery = require("../models/ServiceQuery");
 const Hero = require("../models/Hero");
 
+// Middleware to check authentication and authorization roles
+function checkRole(allowedRoles, allowSelfUser = false) {
+  return (req, res, next) => {
+    const userId = req.headers["x-user-id"];
+    const userRole = req.headers["x-user-role"];
+
+    if (!userId || !userRole) {
+      return res.status(401).json({ message: "Unauthorized. Missing session headers." });
+    }
+
+    // If the role is allowed, proceed
+    if (allowedRoles.includes(userRole)) {
+      return next();
+    }
+
+    // If user is accessing their own queries, and allowSelfUser is true
+    if (allowSelfUser && userRole === "user" && req.params.userId === userId) {
+      return next();
+    }
+
+    return res.status(403).json({ message: "Forbidden. Access denied." });
+  };
+}
+
 // Predefined areas for supported cities
 const CITY_AREAS = {
   noida: [
-    "Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5",
-    "Sector 6", "Sector 7", "Sector 8", "Sector 9", "Sector 10",
-    "Sector 11", "Sector 12", "Sector 14", "Sector 15", "Sector 15A",
-    "Sector 16", "Sector 16A", "Sector 17", "Sector 18", "Sector 19",
-    "Sector 20", "Sector 21", "Sector 22", "Sector 25", "Sector 26",
-    "Sector 27", "Sector 29", "Sector 30", "Sector 31", "Sector 32",
-    "Sector 33", "Sector 34", "Sector 35", "Sector 36", "Sector 37",
-    "Sector 39", "Sector 40", "Sector 41", "Sector 44", "Sector 45",
-    "Sector 46", "Sector 47", "Sector 48", "Sector 49", "Sector 50",
-    "Sector 51", "Sector 52", "Sector 53", "Sector 54", "Sector 55",
-    "Sector 56", "Sector 57", "Sector 58", "Sector 59", "Sector 60",
-    "Sector 61", "Sector 62", "Sector 63", "Sector 63A",
-    "Sector 71", "Sector 72", "Sector 73", "Sector 74", "Sector 75",
-    "Sector 76", "Sector 77", "Sector 78", "Sector 79",
-    "Sector 82", "Sector 83", "Sector 84", "Sector 85",
-    "Sector 92", "Sector 93", "Sector 93A", "Sector 93B",
-    "Sector 94", "Sector 95", "Sector 96", "Sector 97", "Sector 98",
-    "Sector 99", "Sector 100", "Sector 104", "Sector 107",
-    "Sector 108", "Sector 110", "Sector 115", "Sector 116",
-    "Sector 117", "Sector 118", "Sector 119", "Sector 120",
-    "Sector 121", "Sector 122", "Sector 125", "Sector 126",
-    "Sector 127", "Sector 128", "Sector 129", "Sector 130",
-    "Sector 131", "Sector 132", "Sector 133", "Sector 134",
-    "Sector 135", "Sector 136", "Sector 137", "Sector 140",
-    "Sector 140A", "Sector 141", "Sector 142", "Sector 143",
-    "Sector 143B", "Sector 144", "Sector 145", "Sector 146",
-    "Sector 148", "Sector 150", "Sector 151", "Sector 152",
-    "Sector 153", "Sector 155", "Sector 156", "Sector 157",
-    "Sector 158", "Sector 159", "Sector 160", "Sector 161",
-    "Sector 162", "Sector 163", "Sector 164", "Sector 165",
-    "Sector 166", "Sector 167", "Sector 168",
-    "Alpha 1", "Alpha 2",
-    "Beta 1", "Beta 2",
-    "Gamma 1", "Gamma 2",
-    "Delta 1", "Delta 2", "Delta 3",
-    "Phi 1", "Phi 2", "Phi 3", "Phi 4",
-    "Chi 1", "Chi 2", "Chi 3", "Chi 4", "Chi 5",
-    "Sigma 1", "Sigma 2", "Sigma 3", "Sigma 4",
-    "Omicron 1", "Omicron 2", "Omicron 3",
-    "Eta 1", "Eta 2",
-    "Mu 1", "Mu 2",
-    "Zeta 1", "Zeta 2"
+    "Unavailable :)",    
   ],
-  "greater noida": [
-    "Alpha 1", "Alpha 2",
-    "Beta 1", "Beta 2",
-    "Gamma 1", "Gamma 2",
-    "Delta 1", "Delta 2", "Delta 3",
-    "Omega 1", "Omega 2", "Omega 3", "Omega 4",
-    "Xu 1", "Xu 2", "Xu 3",
-    "Swarn Nagri",
-    "Knowledge Park 1", "Knowledge Park 2", "Knowledge Park 3",
-    "Knowledge Park 4", "Knowledge Park 5",
-    "Pari Chowk",
-    "Jagat Farm",
-    "Surajpur",
-    "Kasna",
-    "Dadri",
-    "Bisrakh",
-    "Ecotech 1", "Ecotech 2", "Ecotech 3",
-    "Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5",
-    "Sector 6", "Sector 7", "Sector 8", "Sector 9", "Sector 10",
-    "Sector 11", "Sector 12", "Sector 16", "Sector 16B", "Sector 16C",
-    "Sector 17", "Sector 27", "Sector 29", "Sector 30",
-    "Sector 32", "Sector 33", "Sector 34", "Sector 35", "Sector 36",
-    "Sector 37", "Sector 38",
-    "Gaur City 1", "Gaur City 2",
-    "Shahberi",
-    "Techzone 4",
-    "Sector Pi 1", "Sector Pi 2", "Sector Pi 3",
-    "Sector Mu 1", "Sector Mu 2",
-    "Sector Zeta 1", "Sector Zeta 2"
+  "greater noida": [    
+    "Delta 2"    
   ]
 };
 
@@ -114,12 +70,12 @@ router.get("/supported-cities", (req, res) => {
 });
 
 // POST /api/queries — Create a new service query
-router.post("/queries", async (req, res) => {
+router.post("/queries", checkRole(["user"]), async (req, res) => {
   try {
-    const { userName, userId, city, area, workDescription, price, expiryMinutes } = req.body;
+    const { userName, userId, city, area, houseNumber, workDescription, price, expiryMinutes } = req.body;
 
     // Validate required fields
-    if (!userName || !userId || !city || !area || !workDescription || !price || !expiryMinutes) {
+    if (!userName || !userId || !city || !area || !houseNumber || !workDescription || !price || !expiryMinutes) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -147,6 +103,7 @@ router.post("/queries", async (req, res) => {
       userId,
       city: cityLower,
       area,
+      houseNumber,
       workDescription,
       price: Number(price),
       expiresAt,
@@ -162,7 +119,7 @@ router.post("/queries", async (req, res) => {
 });
 
 // GET /api/queries/areas/:city — Get areas with active query counts for a city (hero view)
-router.get("/queries/areas/:city", async (req, res) => {
+router.get("/queries/areas/:city", checkRole(["hero"]), async (req, res) => {
   try {
     await expireStaleQueries();
 
@@ -185,7 +142,7 @@ router.get("/queries/areas/:city", async (req, res) => {
 });
 
 // GET /api/queries/user/:userId — Get all queries posted by a specific user
-router.get("/queries/user/:userId", async (req, res) => {
+router.get("/queries/user/:userId", checkRole(["hero"], true), async (req, res) => {
   try {
     await expireStaleQueries();
 
@@ -198,8 +155,13 @@ router.get("/queries/user/:userId", async (req, res) => {
 });
 
 // GET /api/queries/hero/:heroId — Get all queries accepted by a specific hero
-router.get("/queries/hero/:heroId", async (req, res) => {
+router.get("/queries/hero/:heroId", checkRole(["hero"]), async (req, res) => {
   try {
+    // Ensure the logged-in hero can only view their own jobs
+    if (req.headers["x-user-id"] !== req.params.heroId) {
+      return res.status(403).json({ message: "Forbidden. Access denied." });
+    }
+
     await expireStaleQueries();
 
     const queries = await ServiceQuery.find({ heroId: req.params.heroId }).sort({ createdAt: -1 });
@@ -210,9 +172,47 @@ router.get("/queries/hero/:heroId", async (req, res) => {
   }
 });
 
+// GET /api/queries/city/:city — Get all active queries in a city (hero dashboard view)
+router.get("/queries/city/:city", checkRole(["hero"]), async (req, res) => {
+  try {
+    await expireStaleQueries();
+
+    const city = req.params.city.toLowerCase().trim();
+    if (!CITY_AREAS[city]) {
+      return res.status(404).json({ message: "City not supported" });
+    }
+
+    const queries = await ServiceQuery.find({
+      city,
+      status: "open",
+    }).sort({ createdAt: -1 });
+
+    res.json(queries);
+  } catch (error) {
+    console.log("Error fetching queries for city:", error);
+    res.status(500).json({ message: "Error fetching queries for city", error: error.message });
+  }
+});
+
+// GET /api/queries/all — Get ALL open queries across all cities (hero dashboard view)
+router.get("/queries/all", checkRole(["hero"]), async (req, res) => {
+  try {
+    await expireStaleQueries();
+
+    const queries = await ServiceQuery.find({
+      status: "open",
+    }).sort({ createdAt: -1 });
+
+    res.json(queries);
+  } catch (error) {
+    console.log("Error fetching all queries:", error);
+    res.status(500).json({ message: "Error fetching all queries", error: error.message });
+  }
+});
+
 // GET /api/queries/:city/:area — Get all active queries for an area (hero chatroom view)
 // NOTE: This wildcard route MUST come AFTER all specific /queries/... routes
-router.get("/queries/:city/:area", async (req, res) => {
+router.get("/queries/:city/:area", checkRole(["hero"]), async (req, res) => {
   try {
     await expireStaleQueries();
 
@@ -233,12 +233,17 @@ router.get("/queries/:city/:area", async (req, res) => {
 });
 
 // PATCH /api/queries/:id/accept — Hero accepts a query
-router.patch("/queries/:id/accept", async (req, res) => {
+router.patch("/queries/:id/accept", checkRole(["hero"]), async (req, res) => {
   try {
     const { heroId, heroName } = req.body;
 
     if (!heroId || !heroName) {
       return res.status(400).json({ message: "heroId and heroName are required" });
+    }
+
+    // Ensure the heroId in request body matches the authorized user session
+    if (req.headers["x-user-id"] !== heroId) {
+      return res.status(403).json({ message: "Forbidden. Hero ID mismatch." });
     }
 
     const query = await ServiceQuery.findById(req.params.id);
@@ -268,6 +273,15 @@ router.patch("/queries/:id/accept", async (req, res) => {
       });
     }
 
+    // Check if hero already has an active in-progress job
+    const activeJob = await ServiceQuery.findOne({ heroId, status: "in_progress" });
+    if (activeJob) {
+      return res.status(400).json({
+        message: "You already have an active job in progress. Complete or cancel it before accepting a new one.",
+        activeJobId: activeJob._id,
+      });
+    }
+
     query.status = "in_progress";
     query.heroId = heroId;
     query.heroName = heroName;
@@ -281,13 +295,12 @@ router.patch("/queries/:id/accept", async (req, res) => {
 });
 
 // PATCH /api/queries/:id/complete — User marks query as completed
-router.patch("/queries/:id/complete", async (req, res) => {
+router.patch("/queries/:id/complete", checkRole(["user"]), async (req, res) => {
   try {
-    const { userId } = req.body;
     const query = await ServiceQuery.findById(req.params.id);
 
     if (!query) return res.status(404).json({ message: "Query not found" });
-    if (query.userId.toString() !== userId) {
+    if (query.userId.toString() !== req.headers["x-user-id"]) {
       return res.status(403).json({ message: "Only the user who posted this query can mark it as completed" });
     }
     if (query.status !== "in_progress") {
@@ -303,13 +316,12 @@ router.patch("/queries/:id/complete", async (req, res) => {
 });
 
 // PATCH /api/queries/:id/cancel — Hero cancels accepted work
-router.patch("/queries/:id/cancel", async (req, res) => {
+router.patch("/queries/:id/cancel", checkRole(["hero"]), async (req, res) => {
   try {
-    const { heroId } = req.body;
     const query = await ServiceQuery.findById(req.params.id);
 
     if (!query) return res.status(404).json({ message: "Query not found" });
-    if (!query.heroId || query.heroId.toString() !== heroId) {
+    if (!query.heroId || query.heroId.toString() !== req.headers["x-user-id"]) {
       return res.status(403).json({ message: "Only the hero who accepted this work can cancel it" });
     }
     if (query.status !== "in_progress") {
@@ -342,6 +354,54 @@ router.patch("/queries/:id/cancel", async (req, res) => {
       message: "Work cancelled successfully. The query is now open for other heroes.",
       cancellationsCount: hero ? hero.cancellations.length : 0 
     });
+  } catch (error) {
+    res.status(500).json({ message: "Error cancelling query", error: error.message });
+  }
+});
+
+
+// PATCH /api/queries/:id/reject — User rejects the accepted hero
+router.patch("/queries/:id/reject", checkRole(["user"]), async (req, res) => {
+  try {
+    const query = await ServiceQuery.findById(req.params.id);
+
+    if (!query) return res.status(404).json({ message: "Query not found" });
+    if (query.userId.toString() !== req.headers["x-user-id"]) {
+      return res.status(403).json({ message: "Only the user who posted this query can reject it" });
+    }
+    if (query.status !== "in_progress") {
+      return res.status(400).json({ message: `Cannot reject a query that is ${query.status}` });
+    }
+
+    // Remove hero assignment and set back to open for other heroes
+    query.status = "open";
+    query.heroId = null;
+    query.heroName = null;
+    await query.save();
+
+    res.json({ message: "Hero rejected. Your request is now open for other heroes.", query });
+  } catch (error) {
+    res.status(500).json({ message: "Error rejecting hero", error: error.message });
+  }
+});
+
+// PATCH /api/queries/:id/user-cancel — User cancels the request before a hero accepts it
+router.patch("/queries/:id/user-cancel", checkRole(["user"]), async (req, res) => {
+  try {
+    const query = await ServiceQuery.findById(req.params.id);
+
+    if (!query) return res.status(404).json({ message: "Query not found" });
+    if (query.userId.toString() !== req.headers["x-user-id"]) {
+      return res.status(403).json({ message: "Only the user who posted this query can cancel it" });
+    }
+    if (query.status !== "open") {
+      return res.status(400).json({ message: `Cannot cancel a request that is ${query.status}` });
+    }
+
+    query.status = "rejected";
+    await query.save();
+
+    res.json({ message: "Request cancelled successfully", query });
   } catch (error) {
     res.status(500).json({ message: "Error cancelling query", error: error.message });
   }

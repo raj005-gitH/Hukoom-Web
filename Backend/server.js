@@ -26,6 +26,13 @@ app.use("/api", queryRoutes);
 app.use("/api", aiRoutes);
 app.use("/api", messageRoutes);
 
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Hukoom Backend Running"
+  });
+});
+
 app.listen(PORT, () => {
-  console.log("Server is running on port 3000");
+  console.log("Server is running on port", PORT);
 });

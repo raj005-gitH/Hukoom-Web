@@ -14,13 +14,14 @@ if (!hostIP) {
   hostIP = '192.168.1.3'; // Fallback to current host WiFi IP (works for physical devices & emulators)
 }
 
-export const API_BASE_URL = `http://${hostIP}:3000`;
+// export const API_BASE_URL = `http://${hostIP}:3000`;
+export const API_BASE_URL = `https://hukoom-backend-9t2f.onrender.com`;
 console.log('[API] scriptURL:', scriptURL);
 console.log('[API] Connecting to API at:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
 });
 

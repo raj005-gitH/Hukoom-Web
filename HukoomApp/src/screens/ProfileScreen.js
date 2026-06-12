@@ -69,6 +69,7 @@ export default function ProfileScreen() {
             Hukoom connects customers with trusted local service professionals across India.
             Find electricians, plumbers, cleaners, mechanics and more — right at your doorstep.
           </Text>
+          <Text style={s.version}>Helpline: +91 96994 06232</Text>
           <Text style={s.version}>Version 1.0.0 (MVP)</Text>
         </View>
 

@@ -55,6 +55,9 @@ export default function HomeScreen({ navigation }) {
       >
 
         {/* ── Header ── */}
+        <View style={s.header}>        
+        </View>
+        
         <View style={s.header}>
           <View>
             <Text style={s.greeting}>Good day 👋</Text>

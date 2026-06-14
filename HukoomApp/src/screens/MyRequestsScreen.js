@@ -230,6 +230,9 @@ export default function MyRequestsScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      <View style={s.headerRow}>        
+      </View>
+
       <View style={s.headerRow}>
         <Text style={s.title}>My Requests</Text>                
         <Text style={s.count}>{requests.length} total</Text>        

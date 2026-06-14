@@ -133,6 +133,9 @@ export default function AuthScreen() {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
 
+          <View style={s.headerRow}>        
+          </View>
+
           {/* ── Brand ── */}
           <View style={s.brand}>
             <View style={s.logoBox}><Text style={s.logoLetter}>H</Text></View>
@@ -249,6 +252,13 @@ export default function AuthScreen() {
                 {mode === 'login' ? "Don't have an account? Register" : 'Already have an account? Login'}
               </Text>
             </TouchableOpacity>
+
+            <View style={s.headerRow}>        
+            </View>
+
+            <Text style={s.switchText}>
+              <Text style={s.tagline}>Need Help? Contact: +91 9699406232</Text>
+            </Text>
           </View>
 
         </ScrollView>
@@ -293,6 +303,8 @@ const s = StyleSheet.create({
   modeBtnActive: { backgroundColor: COLORS.accent },
   modeBtnText: { fontSize: FONTS.sizes.base, fontWeight: '600', color: COLORS.textSecondary },
   modeBtnTextActive: { color: COLORS.white },
+
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: SPACING.lg, paddingBottom: 8 },
 
   // Role cards
   roleRow: { flexDirection: 'row', gap: 12, marginBottom: SPACING.md },

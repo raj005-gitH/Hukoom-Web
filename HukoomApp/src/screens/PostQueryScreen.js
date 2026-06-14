@@ -87,6 +87,9 @@ export default function PostQueryScreen({ route, navigation }) {
         <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
 
           {/* Header */}
+          <View style={s.header}>        
+          </View>
+          
           <View style={s.header}>
             <Text style={s.title}>Post a Request</Text>
             <Text style={s.sub}>Tell us what you need — Heroes will respond quickly.</Text>

@@ -31,6 +31,8 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
+        <View style={s.headerRow}>        
+        </View>
 
         {/* ── Avatar Card ── */}
         <View style={s.avatarCard}>
@@ -86,6 +88,7 @@ export default function ProfileScreen() {
 const s = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.background },
   scroll: { padding: SPACING.lg, paddingBottom: 40 },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: SPACING.lg, paddingBottom: 8 },
 
   // Avatar card
   avatarCard:   { alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.xl, marginBottom: SPACING.md, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },

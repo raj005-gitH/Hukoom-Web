@@ -122,6 +122,9 @@ export default function HeroDashboardScreen() {
     <SafeAreaView style={s.safe}>
 
       {/* Header */}
+      <View style={s.header}>       
+      </View>
+
       <View style={s.header}>
         <View>
           <Text style={s.greeting}>Welcome back ⭐</Text>

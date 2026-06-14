@@ -229,7 +229,7 @@ export default function AuthScreen() {
                       label="Hero Code"
                       value={heroCode}
                       onChange={setHeroCode}
-                      placeholder="e.g. 0512"
+                      placeholder="e.g. 1234"
                       secure
                     />
                   </>

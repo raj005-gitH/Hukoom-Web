@@ -8,11 +8,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //  • Fallback to the PC's actual WiFi IP: '192.168.1.7'
 // ─────────────────────────────────────────────────────────────────
 const scriptURL = NativeModules.SourceCode?.scriptURL || '';
-let hostIP = scriptURL.split('://')[1]?.split('/')[0]?.split(':')[0];
+// let hostIP = scriptURL.split('://')[1]?.split('/')[0]?.split(':')[0];
+let hostIP = 'https://hukoom-backend-9t2f.onrender.com';
 
-if (!hostIP) {
-  hostIP = '192.168.1.3'; // Fallback to current host WiFi IP (works for physical devices & emulators)
-}
+// if (!hostIP) {
+//   hostIP = 'https://hukoom-backend-9t2f.onrender.com'; // Fallback to current host WiFi IP (works for physical devices & emulators)
+// }
 
 // export const API_BASE_URL = `http://${hostIP}:3000`;
 export const API_BASE_URL = `https://hukoom-backend-9t2f.onrender.com`;

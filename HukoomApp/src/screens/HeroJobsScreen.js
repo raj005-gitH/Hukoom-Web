@@ -175,8 +175,12 @@ export default function HeroJobsScreen() {
     <SafeAreaView style={s.safe}>
       {/* Header */}
       <View style={s.headerRow}>
-        <Text style={s.title}>My Jobs</Text>
+        <Text style={s.title}>My Jobs</Text>        
         <Text style={s.count}>{activeJobs.length + historyJobs.length} total</Text>
+      </View>
+
+      <View style={s.headerRow}>
+        <Text style={s.title, {color: '#a39b86'}}>Helpline: +91 9699406232</Text>
       </View>
 
       {/* Stats Row */}
